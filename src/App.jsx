@@ -1516,11 +1516,7 @@ export default function App() {
             </div>
             <div style={{display:"flex",gap:10}}>
               <button onClick={()=>setEditRefDate(null)} style={{flex:1,padding:"11px 0",background:"transparent",border:`1.5px solid ${bdr}`,borderRadius:10,color:tx,cursor:"pointer",fontSize:13,fontFamily:"'Outfit',sans-serif"}}>Cancel</button>
-              <button onClick={()=>{if(editRefDate&&(refGood||refBetter))pushToNotion({id:"ref-"+editRefDate,type:"Reflection",title:`Reflection – ${fmtDate(editRefDate)}`,content:(refGood?"✨ Something good:
-"+refGood+"
-
-":"")+(refBetter?"💡 Could be better:
-"+refBetter:""),date:editRefDate});}} disabled={!!notionSending||(!refGood&&!refBetter)} style={{flex:1,padding:"11px 0",background:notionSent["ref-"+editRefDate]?"rgba(60,180,100,0.15)":"transparent",border:`1.5px solid ${notionSent["ref-"+editRefDate]?"rgba(60,180,100,0.5)":bdr}`,borderRadius:10,color:notionSent["ref-"+editRefDate]?"#3CB464":muted,cursor:"pointer",fontSize:13,fontFamily:"'Outfit',sans-serif",transition:"all 0.2s"}}>{notionSent["ref-"+editRefDate]?"✓ Sent":notionSending==="ref-"+editRefDate?"Sending…":"Send to Notion"}</button>
+              <button onClick={()=>{if(editRefDate&&(refGood||refBetter)){const txt=(refGood?"Something good: "+refGood:"")+(refGood&&refBetter?" | ":"")+(refBetter?"Could be better: "+refBetter:"");pushToNotion({id:"ref-"+editRefDate,type:"Reflection",title:"Reflection - "+fmtDate(editRefDate),content:txt,date:editRefDate});}}} disabled={!!notionSending||(!refGood&&!refBetter)} style={{flex:1,padding:"11px 0",background:notionSent["ref-"+editRefDate]?"rgba(60,180,100,0.15)":"transparent",border:"1.5px solid "+(notionSent["ref-"+editRefDate]?"rgba(60,180,100,0.5)":bdr),borderRadius:10,color:notionSent["ref-"+editRefDate]?"#3CB464":muted,cursor:"pointer",fontSize:13,fontFamily:"'Outfit',sans-serif",transition:"all 0.2s"}}>{notionSent["ref-"+editRefDate]?"Sent":notionSending==="ref-"+editRefDate?"Sending...":"Send to Notion"}</button>
               <button onClick={saveReflection} style={{flex:2,padding:"11px 0",background:accent,color:"#fff",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"'Outfit',sans-serif"}}>Save Reflection</button>
             </div>
           </div>
