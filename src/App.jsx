@@ -163,6 +163,7 @@ export default function App() {
   const [pomSec,  setPomSec]  = useState(0);
   // Inline task editing
   const [editingTask, setEditingTask] = useState(null);
+  const [editCat, setEditCat] = useState(null);
   const [editDesc,    setEditDesc]    = useState("");
   const [editStart,   setEditStart]   = useState("");
   const [editEnd,     setEditEnd]     = useState("");
@@ -423,6 +424,13 @@ export default function App() {
   }
 
   // ── Tasks ──────────────────────────────────────────────────────────────────
+  function openEditTask(t) {
+  setEditingTask(t.id);
+  setEditDesc(t.description);
+  setEditCat(t.categoryId || null);
+  setEditStart(t.startTime ? toHHMM(t.startTime) : "");
+  setEditEnd(t.endTime ? toHHMM(t.endTime) : "");
+}
   function startTask(desc) {
     const now=Date.now(), tod=todayStr();
     let ts=[...tasks];
@@ -480,21 +488,22 @@ export default function App() {
     setEditStart(t.startTime ? toHHMM(t.startTime) : "");
     setEditEnd(t.endTime ? toHHMM(t.endTime) : "");
   }
-  function saveTaskEdit(id) {
-    const t = tasks.find(x => x.id === id);
-    if (!t) return;
-    const newStart = editStart ? mergeTimeIntoDate(t.date, editStart) : t.startTime;
-    const newEnd   = editEnd   ? mergeTimeIntoDate(t.date, editEnd)   : t.endTime;
-    const newDur   = (newStart && newEnd && newEnd > newStart) ? newEnd - newStart : t.duration;
-    const updated = tasks.map(x => x.id===id ? {
-      ...x,
-      description: editDesc.trim() || x.description,
-      startTime: newStart,
-      endTime:   newEnd,
-      duration:  newDur,
-    } : x);
-    saveTasks(updated);
-    setEditingTask(null);
+function saveTaskEdit(id) {
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  const newStart = editStart ? mergeTimeIntoDate(t.date, editStart) : t.startTime;
+  const newEnd   = editEnd   ? mergeTimeIntoDate(t.date, editEnd)   : t.endTime;
+  const newDur   = (newStart && newEnd && newEnd > newStart) ? newEnd - newStart : t.duration;
+  const updated = tasks.map(x => x.id===id ? {
+    ...x,
+    description: editDesc.trim() || x.description,
+    categoryId:  editCat,
+    startTime: newStart,
+    endTime:   newEnd,
+    duration:  newDur,
+  } : x);
+  saveTasks(updated);
+  setEditingTask(null);
   }
   function getOverlappingIds(taskList) {
     const done = taskList.filter(t => t.startTime && t.endTime && !t.planned);
@@ -859,6 +868,11 @@ export default function App() {
                                                     <div style={{padding:"8px",background:cardBg,borderRadius:8,border:`1px solid ${bdr}`,display:"flex",flexDirection:"column",gap:8}}>
                                                       <input value={editDesc} onChange={e=>setEditDesc(e.target.value)}
                                                         style={{...inp,fontSize:12,padding:"6px 9px"}} placeholder="Task name"/>
+                                                      <select value={editCat||""} onChange={e=>setEditCat(e.target.value||null)}
+                                                        style={{...inp,fontSize:12,padding:"6px 9px",cursor:"pointer",color:editCat?tx:muted}}>
+                                                          <option value="">No category</option>
+                                                            {cats.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+                                                      </select>
                                                       <div style={{display:"flex",gap:8,alignItems:"flex-end",flexWrap:"wrap"}}>
                                                         <div style={{display:"flex",flexDirection:"column",gap:3}}>
                                                           <span style={{fontSize:10,color:muted}}>Start</span>
